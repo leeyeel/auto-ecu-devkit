@@ -1,0 +1,72 @@
+# ===== 通用 =====
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+build/
+
+# ===== 静态分析输出 =====
+*.qac
+*.lint
+*.coverity
+*.sarif
+analysis_output/
+static_analysis/
+reports/
+
+# ===== 归一化 / 解析结果=====
+findings*.json
+findings*.csv
+
+# ===== 嵌入式 / MCU 构建产物 =====
+*.o
+*.a
+*.elf
+*.map
+*.hex
+*.bin
+*.srec
+*.d
+*.lst
+
+# ===== IDE / 工程文件 =====
+.vscode/
+.idea/
+*.code-workspace
+
+# NXP S32 Design Studio
+S32DS/
+*.launch
+*.project
+*.cproject
+.settings/
+
+# ===== RTOS =====
+FreeRTOSConfig.h.bak
+
+# ===== 测试与覆盖率 =====
+coverage/
+*.gcda
+*.gcno
+*.gcov
+
+# ===== PDF / 标准原文 =====
+*.pdf
+
+# ===== OS =====
+.cache/
