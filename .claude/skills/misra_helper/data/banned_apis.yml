@@ -1,0 +1,16 @@
+# data/banned_apis.yml
+# Hard bans aligned with Automotive ECU + MISRA-oriented subset.
+banned_functions:
+  - malloc
+  - free
+  - calloc
+  - realloc
+  - printf
+  - sprintf
+  - vsprintf
+  - scanf
+  - strcpy
+  - strcat
+  - gets
+banned_keywords:
+  - goto

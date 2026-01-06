@@ -1,0 +1,129 @@
+# data/rule_map.yml
+# Symptoms/analyzer phrases -> MISRA-oriented buckets and fix patterns.
+# NOTE: This file does not contain MISRA copyrighted wording.
+
+buckets:
+  essential_type:
+    description: "Essential type model: signed/unsigned mixing, narrowing, implicit conversions."
+    keywords:
+      - "signed/unsigned"
+      - "implicit conversion"
+      - "conversion changes signedness"
+      - "narrowing conversion"
+      - "usual arithmetic conversions"
+      - "essential type"
+      - "cast required"
+    fix_patterns:
+      - "use explicit cast with justification"
+      - "avoid mixing signed and unsigned in same expression"
+      - "promote operands to a common type after bounds check"
+      - "use fixed-width integer types and explicit suffixes (U) where appropriate"
+
+  side_effects:
+    description: "Side effects / order of evaluation: ++/--, assignment inside expressions."
+    keywords:
+      - "side effect"
+      - "sequence point"
+      - "order of evaluation"
+      - "multiple modification"
+      - "++"
+      - "--"
+    fix_patterns:
+      - "split expression into multiple statements"
+      - "avoid ++/-- inside larger expressions"
+      - "evaluate function calls into temporaries first"
+
+  control_flow:
+    description: "Control flow clarity: switch default, fall-through, missing break."
+    keywords:
+      - "switch"
+      - "missing default"
+      - "no default"
+      - "fall-through"
+      - "missing break"
+      - "unreachable"
+    fix_patterns:
+      - "add default branch"
+      - "add explicit break/return in each case"
+      - "add fall-through comment only when intentional"
+
+  pointers:
+    description: "Pointer safety: NULL checks, pointer arithmetic, pointer casts."
+    keywords:
+      - "null pointer"
+      - "NULL"
+      - "dereference"
+      - "pointer arithmetic"
+      - "cast to/from pointer"
+      - "alignment"
+    fix_patterns:
+      - "check pointer parameters for NULL before use"
+      - "avoid pointer arithmetic; use array indexing"
+      - "avoid pointer/integer casts unless strictly required"
+
+  initialization:
+    description: "Initialization and lifetime."
+    keywords:
+      - "uninitialized"
+      - "may be used uninitialized"
+      - "not initialized"
+      - "partial initialization"
+    fix_patterns:
+      - "initialize variables at declaration"
+      - "fully initialize structs/arrays"
+      - "set safe defaults before branching"
+
+  library:
+    description: "Unsafe/banned library APIs (strcpy/strcat/sprintf etc.)."
+    keywords:
+      - "strcpy"
+      - "strcat"
+      - "sprintf"
+      - "vsprintf"
+      - "gets"
+      - "printf"
+    fix_patterns:
+      - "replace with bounded alternatives or project-safe wrappers"
+      - "check buffer size and return codes"
+      - "avoid stdio; use ECU logging abstraction"
+
+  memory:
+    description: "Dynamic memory usage."
+    keywords:
+      - "malloc"
+      - "free"
+      - "calloc"
+      - "realloc"
+      - "heap"
+      - "dynamic allocation"
+    fix_patterns:
+      - "remove dynamic allocation; use static/stack buffers"
+      - "use fixed-size pools with strict ownership rules (if allowed)"
+
+  preprocessor_macros:
+    description: "Macro pitfalls: missing parentheses, side effects."
+    keywords:
+      - "macro"
+      - "preprocessor"
+      - "missing parentheses"
+      - "function-like macro"
+    fix_patterns:
+      - "parenthesize all macro parameters and expansion"
+      - "replace macro with static inline function"
+      - "avoid side effects in macro arguments"
+
+  concurrency:
+    description: "Concurrency/RTOS: races, ISR constraints, blocking calls in ISR."
+    keywords:
+      - "race"
+      - "deadlock"
+      - "atomic"
+      - "ISR"
+      - "interrupt"
+      - "blocking"
+    fix_patterns:
+      - "separate ISR-safe fast path from task-level processing"
+      - "protect shared state with critical sections/atomics"
+      - "avoid blocking calls in ISR"
+
+default_bucket: "general"
