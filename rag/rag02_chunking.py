@@ -1,11 +1,10 @@
 from __future__ import annotations
-
-import argparse
-import json
 import re
-from dataclasses import dataclass
+import json
+import argparse
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, Iterable, Iterator, List, Optional 
 
 
 # -----------------------------
@@ -28,7 +27,6 @@ _re_figure_table = re.compile(r"^\s*(Figure|FIGURE|Table|TABLE)\s+\d+([.-]\d+)?\
 # Register style: "CTRL1 Register (CAN_CTRL1)"
 _re_register_line = re.compile(r"^\s*([A-Z0-9_]+)\s+Register\b.*$|^\s*Register\s+\d+\b.*$", re.IGNORECASE)
 
-
 def is_heading_line(line: str) -> bool:
     s = line.strip()
     if not s:
@@ -43,7 +41,6 @@ def is_heading_line(line: str) -> bool:
     if _re_all_caps.match(s) and not s.endswith("."):
         return True
     return False
-
 
 def extract_heading_title(line: str) -> str:
     """Return a normalized heading title for metadata."""
@@ -61,7 +58,6 @@ def extract_heading_title(line: str) -> str:
         return s
     return s[:120]
 
-
 # -----------------------------
 # Chunk model
 # -----------------------------
@@ -72,7 +68,6 @@ class PageRecord:
     source_pdf: str
     page: int
     text: str
-
 
 @dataclass
 class Chunk:
@@ -94,11 +89,9 @@ class Chunk:
             "char_len": len(self.text),
         }
 
-
 # -----------------------------
 # IO
 # -----------------------------
-
 def iter_pages(jsonl_path: Path) -> Iterator[PageRecord]:
     with jsonl_path.open("r", encoding="utf-8") as f:
         for line in f:
@@ -111,12 +104,9 @@ def iter_pages(jsonl_path: Path) -> Iterator[PageRecord]:
                 page=int(obj["page"]),
                 text=obj.get("text", "") or "",
             )
-
-
 # -----------------------------
 # Paragraph splitting
 # -----------------------------
-
 def split_into_blocks(page_text: str) -> List[str]:
     """
     Split page text into blocks by blank lines, while preserving headings.
@@ -125,7 +115,6 @@ def split_into_blocks(page_text: str) -> List[str]:
     t = page_text.replace("\r\n", "\n").replace("\r", "\n").strip()
     if not t:
         return []
-
     raw_blocks = re.split(r"\n\s*\n+", t)
     blocks: List[str] = []
     for b in raw_blocks:
@@ -134,7 +123,6 @@ def split_into_blocks(page_text: str) -> List[str]:
             continue
         blocks.append(b)
     return blocks
-
 
 def block_starts_with_heading(block: str) -> Optional[str]:
     """
@@ -145,11 +133,9 @@ def block_starts_with_heading(block: str) -> Optional[str]:
         return extract_heading_title(first_line)
     return None
 
-
 # -----------------------------
 # Chunking logic
 # -----------------------------
-
 def chunk_pages(
     pages: Iterable[PageRecord],
     *,
@@ -162,7 +148,6 @@ def chunk_pages(
     Create chunks by aggregating paragraph-like blocks across pages.
     Prefer splitting at headings.
     """
-
     chunks: List[Chunk] = []
 
     cur_doc: Optional[str] = None
@@ -179,7 +164,6 @@ def chunk_pages(
         text = "\n\n".join(cur_text_parts).strip()
         if not text:
             return
-
         # If too small and not forced, keep accumulating
         if (len(text) < min_chars) and (not force):
             return
@@ -250,18 +234,14 @@ def chunk_pages(
     # Flush remaining
     flush(force=True)
     return chunks
-
-
 # -----------------------------
 # CLI
 # -----------------------------
-
 def write_chunks_jsonl(chunks: List[Chunk], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as f:
         for ch in chunks:
             f.write(json.dumps(ch.to_json(), ensure_ascii=False) + "\n")
-
 
 def main():
     ap = argparse.ArgumentParser(description="Chunk page-level JSONL into chunk-level JSONL for RAG.")
@@ -292,7 +272,6 @@ def main():
         "out_path": str(Path(args.out_chunks).resolve()),
     }
     print(json.dumps(stats, ensure_ascii=False, indent=2))
-
 
 if __name__ == "__main__":
     main()

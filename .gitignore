@@ -70,3 +70,5 @@ coverage/
 
 # ===== OS =====
 .cache/
+
+*.jsonl
